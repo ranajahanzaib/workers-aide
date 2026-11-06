@@ -1,0 +1,22 @@
+{
+  "name": "workers-aide",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.28.2",
+  "scripts": {
+    "dev": "pnpm --filter @aide/platform dev",
+    "build": "node scripts/sync-widget.mjs && pnpm --filter @aide/platform build",
+    "typecheck": "pnpm --filter @aide/platform typecheck",
+    "test": "pnpm --filter @aide/platform test",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "db:migrate": "pnpm --filter @aide/platform db:migrate",
+    "deploy": "pnpm run deploy:check && pnpm typecheck && pnpm test && pnpm build && pnpm --filter @aide/platform run deploy",
+    "setup": "node scripts/setup.mjs",
+    "deploy:check": "node scripts/deploy-check.mjs",
+    "test:live": "node scripts/live-smoke.mjs"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.4"
+  }
+}

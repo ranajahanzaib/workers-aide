@@ -1,0 +1,14 @@
+[
+  {
+    "title": "SAMPLE — Services",
+    "category": "service",
+    "content": "Fictional example: Acorn Studio offers website consultations. Replace this with your actual business information.",
+    "enabled": false
+  },
+  {
+    "title": "SAMPLE — Appointment requests",
+    "category": "policy",
+    "content": "Fictional example: Requests are reviewed by our team. A request is not a confirmed booking. Replace this with your actual policy.",
+    "enabled": false
+  }
+]

@@ -1,46 +1,9 @@
-## Contributing
+# Contributing to Workers AIDE
 
-We welcome contributions of all kinds to improve this project! Here's how you can get involved:
+Use Node 22+ and pnpm. Read [local development](docs/development.md), [architecture](docs/architecture.md), and [security](docs/security.md) before changing the agent or APIs.
 
-1. **Fork the Repository**: Start by forking the repository to your GitHub account.
+Run `pnpm install`, `pnpm run setup`, and `pnpm dev`. Keep actual secrets and local state out of Git. Ordinary CI must never need production credentials or call a paid inference service.
 
-2. **Clone Your Fork**: Clone the forked repository to your local machine:
+Before a pull request, run `pnpm format`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build`. Add meaningful failure-path tests for authorization, consent or persistence changes. Explain user-visible behavior, migration requirements and validation. Do not claim live AI behavior was verified with mocked responses.
 
-   ```bash
-   git clone <repo_url>
-   cd repo_dir
-   ```
-
-3. **Create a Branch**: Create a new branch for your feature or bug fix:
-
-   ```bash
-   git checkout -b feature-name
-   ```
-
-4. **Make Changes**: Make your changes to the codebase. Be sure to follow existing code style and conventions.
-
-5. **Commit Changes**: Commit your changes with a clear and descriptive message:
-
-   ```bash
-   git commit -m "Add detailed description of the changes"
-   ```
-
-6. **Push Changes**: Push your changes to your fork:
-
-   ```bash
-   git push origin feature-name
-   ```
-
-7. **Submit a Pull Request**: Open a pull request from your branch to the main repository's branch. Include a detailed description of your changes and the problem they solve.
-
-8. **Review and Feedback**: Participate in the review process. Make any requested changes, and your contribution will be merged!
-
-### Guidelines
-
-- Ensure your code follows the existing style and conventions.
-- Include tests for any new functionality or bug fixes.
-- Write clear, concise commit messages and pull request descriptions.
-
-### Issues
-
-Feel free to report bugs or suggest enhancements by creating an issue. Be sure to include detailed information about the problem and, if possible, steps to reproduce it.
+Use a focused branch. Discuss substantial feature additions first. Preserve the single-business deployment and Free-compatible defaults. Never add arbitrary model-controlled code execution. Follow the [Code of Conduct](CODE_OF_CONDUCT.md).

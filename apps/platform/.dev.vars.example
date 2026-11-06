@@ -1,0 +1,3 @@
+# Generate a random secret using pnpm run setup. This file is not loaded automatically.
+# Set ADMIN_SECRET through Wrangler Secrets in production.
+ADMIN_SECRET=REPLACE_WITH_AT_LEAST_32_RANDOM_CHARACTERS

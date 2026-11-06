@@ -72,3 +72,9 @@ yarn-error.log*
 
 # Python
 venv
+
+# Workers local credentials and persistence
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.wrangler
