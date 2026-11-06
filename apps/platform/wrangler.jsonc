@@ -8,40 +8,40 @@
     "directory": "./dist/client",
     "not_found_handling": "single-page-application",
     "run_worker_first": true,
-    "binding": "ASSETS",
+    "binding": "ASSETS"
   },
   "ai": {
-    "binding": "AI",
+    "binding": "AI"
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "workers-aide",
       "database_id": "00000000-0000-0000-0000-000000000000",
-      "migrations_dir": "migrations",
-    },
+      "migrations_dir": "migrations"
+    }
   ],
   "durable_objects": {
     "bindings": [
       {
         "name": "BusinessChat",
-        "class_name": "BusinessChat",
-      },
-    ],
+        "class_name": "BusinessChat"
+      }
+    ]
   },
   "migrations": [
     {
       "tag": "v1",
-      "new_sqlite_classes": ["BusinessChat"],
-    },
+      "new_sqlite_classes": ["BusinessChat"]
+    }
   ],
   "observability": {
-    "enabled": true,
+    "enabled": true
   },
   "vars": {
-    "ENVIRONMENT": "production",
+    "ENVIRONMENT": "production"
   },
   "triggers": {
-    "crons": ["17 3 * * *"],
-  },
+    "crons": ["17 3 * * *"]
+  }
 }

@@ -9,8 +9,8 @@ import {
   pruneMessages,
   stepCountIs,
   streamText,
-  tool,
   type ToolSet,
+  tool,
 } from "ai";
 import { z } from "zod";
 import {
