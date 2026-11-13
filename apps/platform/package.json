@@ -16,7 +16,7 @@
     "@cloudflare/ai-chat": "0.12.2",
     "agents": "0.32.0",
     "ai": "7.0.157",
-    "hono": "4.13.14",
+    "hono": "4.13.16",
     "lucide-react": "1.65.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
