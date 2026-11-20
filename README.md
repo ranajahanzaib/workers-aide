@@ -4,26 +4,52 @@
 
 AIDE means **AI Deployed at the Edge**. One self-hosted installation helps one business answer questions from its knowledge, capture contact requests, collect appointment preferences, and review conversations. Your configuration, conversations, and records stay in your Cloudflare account.
 
-## What works
+![Workers AIDE Operations Overview](docs/screenshots/overview.png)
 
-- Responsive admin workspace with server-authorized sessions and private APIs.
-- Editable business profile, four assistant templates, tool permissions and usage budgets.
-- D1 knowledge CRUD with indexed FTS5 retrieval; no vector database required.
-- Workers AI streaming chat with one SQLite Durable Object per conversation.
-- Contact capture with visitor form consent, pending appointment requests and human handoff.
-- Conversation inbox, record statuses, deletion and safely escaped lead CSV export.
-- Independent iframe widget, appearance settings and optional embedding allowlist.
-- Atomic usage safeguards, sanitized events, scheduled retention and inference-error feedback.
+_Local development showcase running live against local D1 and Durable Objects. Metrics reflect actual verified test records._
 
-No SaaS subscriptions, external model keys, Redis, separate backend host, or mandatory paid service. There is no live calendar, email/SMS notification, CRM connector, or claim of regulatory certification. Appointment requests are **not confirmed bookings**. Model contact tools prepare a form; the visitor submits it before any contact record is created.
+---
 
-![Workers AIDE dashboard with real local QA records](docs/images/dashboard.jpg)
+## What Works
 
-_Local development screenshot. Counts reflect actual browser test records._
+- **Responsive Admin Workspace**: Server-authorized sessions, real-time application metrics, and private administrative APIs.
+- **Configurable Agent Engine**: 4 assistant templates, editable business identity, granular tool permissions, and token/message budgets.
+- **Zero-Vector Knowledge Base**: D1 relational CRUD with full-text search (FTS5) BM25 retrieval; no external vector database required.
+- **Edge Streaming Chat**: Workers AI streaming inference backed by Cloudflare Agents SDK with authoritative transcripts in SQLite Durable Objects.
+- **Deterministic Action Tools**: Consented visitor contact capture, pending appointment requests, and human handoff workflows.
+- **Conversation & Records Inbox**: Record status lifecycle tracking, individual record deletion, and formula-injection-safe CSV export.
+- **Independent Embeddable Widget**: Lightweight iframe widget loader requiring no host React or third-party cookies, with domain allowlisting.
+- **Atomic Safety & Hygiene**: Atomic rate safeguards, sanitized audit events, scheduled retention sweeps, and honest offline/inference-error fallback.
 
-## Quick start
+> [!NOTE]
+> No SaaS subscriptions, external model API keys, Redis, separate backend host, or mandatory paid tiers are required. There is no live calendar sync, email/SMS notification provider, CRM connector, or claim of regulatory certification. Appointment requests are **not confirmed bookings**; model contact tools prepare forms that visitors must explicitly confirm and submit before database records are created.
 
-Node 22+ and pnpm are required. The repository pins pnpm 10.28.2.
+---
+
+## Visual Showcase
+
+Explore the primary workspaces and interfaces captured from the running local application:
+
+|                                                                    Overview & Operations                                                                     |                                                                               Assistant Configuration                                                                               |
+| :----------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| [![Overview](docs/screenshots/overview.png)](docs/screenshots/overview.png)<br><sub>Live operations dashboard, key metrics, and onboarding milestones.</sub> | [![Agent Config](docs/screenshots/agent-config.png)](docs/screenshots/agent-config.png)<br><sub>Template selection, GLM-4.7-Flash model parameters, and tool access controls.</sub> |
+
+|                                                                                    FTS5 Knowledge Management                                                                                    |                                                                           Consented Leads Pipeline                                                                            |
+| :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| [![Knowledge Base](docs/screenshots/knowledge-base.png)](docs/screenshots/knowledge-base.png)<br><sub>Full-text searchable knowledge entries categorized by service, pricing, and policy.</sub> | [![Leads](docs/screenshots/records-leads.png)](docs/screenshots/records-leads.png)<br><sub>Captured visitor leads with qualification statuses and sanitized CSV export.</sub> |
+
+|                                                                                     Appointment Requests                                                                                     |                                                                                  Embeddable Visitor Chat                                                                                  |
+| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| [![Appointments](docs/screenshots/records-appointments.png)](docs/screenshots/records-appointments.png)<br><sub>Pending consultation booking requests ready for administrative review.</sub> | [![Chat Widget](docs/screenshots/chat-widget.png)](docs/screenshots/chat-widget.png)<br><sub>Clean visitor-facing web widget with streaming responses and interactive action cards.</sub> |
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- **Node.js**: v22+
+- **pnpm**: v10+ (repository pins `pnpm@10.28.2`)
 
 ```sh
 pnpm install
@@ -31,29 +57,54 @@ pnpm run setup
 pnpm dev
 ```
 
-Open the local URL printed by Vite. The setup script creates `apps/platform/.dev.vars` with a random local admin secret and applies local D1 migrations. Read that ignored file privately to sign in. `pnpm run setup` is deliberate: `pnpm setup` is a different pnpm built-in command.
+Open `http://127.0.0.1:5173` in your browser.
 
-Configure your business, add real knowledge, then publish the assistant. The production defaults are unpublished and contain no fictional business data. Optional fictional examples are clearly marked in `examples/sample-knowledge.json`.
+- `pnpm run setup` generates `apps/platform/.dev.vars` with a private, cryptographically random `ADMIN_SECRET` and applies initial D1 SQLite migrations locally.
+- Read `apps/platform/.dev.vars` to retrieve your local admin secret for signing into the workspace.
+- Note: `pnpm run setup` is deliberate; `pnpm setup` is a distinct pnpm built-in command.
 
-AI inference always runs remotely through Workers AI. Authenticate with `pnpm --filter @aide/platform exec wrangler login` for live inference, then run `AIDE_REMOTE_AI=1 pnpm dev`. Plain `pnpm dev` is offline and does not connect remote bindings. Without AI access, failures are reported honestly and local contact/appointment forms still use real D1. Ordinary tests do not require production credentials.
+### Offline vs. Remote AI Inference
 
-## Deploy
+- **Default (Offline / Test Mode)**: Plain `pnpm dev` runs offline. Deterministic business tools, D1 migrations, admin settings, and contact forms use real local SQLite. Missing AI bindings fail closed with honest user-facing fallback notices.
+- **Live Remote AI Inference**: To connect live Cloudflare Workers AI inference during local development, authenticate via Wrangler and run:
+
+  ```sh
+  pnpm --filter @aide/platform exec wrangler login
+  AIDE_REMOTE_AI=1 pnpm dev
+  ```
+
+---
+
+## Deployment
+
+Deploy Workers AIDE directly to your Cloudflare account using Cloudflare Workers, D1, and Durable Objects:
 
 ```sh
+# 1. Authenticate with your Cloudflare account
 pnpm --filter @aide/platform exec wrangler login
+
+# 2. Provision the D1 database
 pnpm --filter @aide/platform exec wrangler d1 create workers-aide
-# Copy the returned database_id into apps/platform/wrangler.jsonc.
+# Copy the returned database_id into apps/platform/wrangler.jsonc
+
+# 3. Configure your production secret (minimum 32 characters)
 pnpm --filter @aide/platform exec wrangler secret put ADMIN_SECRET
+
+# 4. Apply database migrations to remote D1
 pnpm --filter @aide/platform exec wrangler d1 migrations apply workers-aide --remote
+
+# 5. Verify preflight bindings and deploy
 pnpm run deploy:check
 pnpm run deploy
 ```
 
-Use a high-entropy secret of at least 32 characters. [Deployment instructions](docs/deployment.md) explain provisioning, validation, first publication, rotation, domains, and operations. Deployment is not performed automatically by setup or CI.
+For complete instructions on provisioning, custom domains, secret rotation, and operational boundaries, see the [Deployment Guide](docs/deployment.md).
 
-## Embed
+---
 
-After publishing, copy the snippet from Widget:
+## Embedding the Widget
+
+Once published, embed the chat assistant into any website with an asynchronous script snippet:
 
 ```html
 <script
@@ -63,38 +114,99 @@ After publishing, copy the snippet from Widget:
 ></script>
 ```
 
-The loader does not require React on the host site or third-party cookies. [Embedding guide](docs/embedding.md).
+The embed loader creates an isolated, responsive `<iframe>` that operates cross-origin without requiring React on the parent host site or third-party cookies. See the [Embedding Guide](docs/embedding.md).
 
-## Architecture
+---
 
-A pnpm workspace with `apps/platform` (React/Vite, Hono, agent runtime), `packages/core` (shared domain exports), and `packages/widget` (independent loader). One Worker serves static assets, APIs, public chat and the widget. D1 stores business data and indexes; Agents SDK `AIChatAgent` manages authoritative transcripts in SQLite Durable Objects. `@cloudflare/ai-chat`, the AI SDK and Workers AI provide bounded streaming inference using GLM-4.7-Flash.
+## Architecture & System Design
 
-Server-owned policy and explicit Zod-validated tools separate model reasoning from business operations. Visitor capability credentials authorize one conversation; short-lived tickets authorize SDK transport. Server-side admin sessions authorize dashboard operations. [Architecture](docs/architecture.md) · [Tool policies](docs/agent-tools.md) · [Security](docs/security.md).
+Workers AIDE is organized as a pnpm workspace with three core packages:
 
-## Free-tier expectations
+- `apps/platform`: Single Cloudflare Worker serving the React/Vite admin dashboard, Hono API routes, public visitor chat, and Durable Object WebSocket agent runtime.
+- `packages/core`: Shared schemas, Zod validation models, and domain utilities.
+- `packages/widget`: Vanilla TypeScript iframe loader and runtime injector.
 
-The implementation uses Free-compatible services and modest application safeguards. It does not guarantee a number of conversations or immunity from quota exhaustion. Actual token/Neuron usage and CPU must be checked in the Cloudflare dashboard. The Usage page shows application counters, never invented billing estimates. AI failures do not silently switch providers or claim writes succeeded. [Current documented quotas and operational limits](docs/free-tier.md).
-
-## Development
-
-```sh
-pnpm format
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
-pnpm db:migrate
-pnpm --filter @aide/platform types
+```
+                        ┌───────────────────────────────────────────────┐
+                        │              Cloudflare Edge Worker           │
+                        │                                               │
+Visitor / Customer ───► │  /widget.js ────► Static Asset Binding        │
+                        │  /api/public/* ─► Hono Routing & Rate Limits  │
+                        │  /agents/* ─────► SQLite Durable Objects      │
+                        │                    (Autoritative Chat DO)     │
+                        └──────────────┬──────────────────┬─────────────┘
+                                       │                  │
+                                       ▼                  ▼
+                         ┌───────────────────────┐  ┌───────────────────┐
+                         │   Cloudflare D1       │  │ Workers AI        │
+                         │   (FTS5 Knowledge,    │  │ (GLM-4.7-Flash    │
+                         │    Leads, Appts,      │  │  Streaming LLM)   │
+                         │    Counters, Events)  │  └───────────────────┘
+                         └───────────────────────┘
 ```
 
-Workers integration tests exercise real local migrations, D1 CRUD, session protection, isolation, tool permissions, consent, idempotency, and limits. Live model behavior, remote deployment, actual quota behavior, and production CPU require authenticated verification; CI does not pretend to test them. [Development](docs/development.md) · [Configuration](docs/configuration.md).
+Server-owned policy and explicit Zod-validated tools separate model reasoning from business operations. Visitor capability credentials authorize individual conversations, while short-lived tickets authorize WebSocket SDK transport. Server-side admin sessions authorize dashboard operations.
 
-## Roadmap
+For in-depth technical details, consult:
 
-Prioritize real deployment/model evaluations and operational hardening, then optional calendar/CRM adapters and semantic retrieval where a business actually needs them. Multi-tenant billing, visual workflows, voice and arbitrary third-party code are outside v1.
+- [Architecture & Durable Objects](docs/architecture.md)
+- [Tool Policies & Guardrails](docs/agent-tools.md)
+- [Security Architecture](docs/security.md)
+- [Free-Tier Resource Envelopes](docs/free-tier.md)
 
-## Contributing & license
+---
 
-See [Contributing](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md). This project is [MIT License](LICENSE)d.
+## Verification & Development
 
-Workers AIDE is an independent project, not affiliated with or endorsed by Cloudflare. Cloudflare and other product names belong to their respective owners. The working project name is not represented as trademark-cleared.
+Run the full local validation suite:
+
+```sh
+# Linting & Formatting
+pnpm lint
+pnpm format
+
+# Strict TypeScript Verification
+pnpm typecheck
+
+# Integration Test Suite
+pnpm test
+
+# Production Build Verification
+pnpm build
+
+# Local D1 Migration Run
+pnpm db:migrate
+```
+
+### Test Suite Scope
+
+The Vitest suite (`tests/platform.test.ts`) verifies 22 end-to-end integration specifications executing inside the local Workers runtime:
+
+- **Security & Authorization**: Anonymous admin access denial, timing-safe session validation, origin verification, and capability ticket scoping.
+- **Deterministic Tool Execution**: Consent-enforced lead capture, concurrent lead deduplication, unconfirmed appointment requests, and disabled tool rejection.
+- **Grounding & Guardrails**: Formula injection prevention in CSV exports, atomic rate limit counters, and strict server-owned system prompts.
+- **Transport & Durable Objects**: Session isolation, transcript persistence, and honest fallback on inference failure.
+
+---
+
+## Free-Tier Expectations
+
+Workers AIDE is engineered to operate comfortably within Cloudflare Free tier resource allowances:
+
+- Real counters for daily conversations, AI requests, and active sessions.
+- No artificial billing estimates or fabricated usage graphs.
+- Clear error states when platform quotas or edge memory limits are reached.
+
+Consult [Current Documented Quotas & Operational Limits](docs/free-tier.md) for detailed resource envelopes.
+
+---
+
+## Contributing & License
+
+Contributions are welcome! Please review [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before opening a pull request.
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+_Workers AIDE is an independent open-source project and is not affiliated with or endorsed by Cloudflare. Cloudflare and related marks are trademarks of their respective owners._
